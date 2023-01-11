@@ -6,8 +6,42 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="./style.css"/>
     <script src="./jquery-3.6.3.js"></script>
+    <title>Math Game</title>
   </head>
   <body class="text-center">
+    <div>
+      <div id="display">
+        <p id="equation"></p>
+      </div>
+      <input id="input" type="text"/>
+      <table class="mx-auto my-2">
+        <tr>
+          <td>
+            <label>+</label>
+            <input type="checkbox" data-function="add"/>
+          </td>
+          <td>
+            <label>-</label>
+            <input type="checkbox" data-function="sub"/>
+          </td>
+          <td>
+            <label>*</label>
+            <input type="checkbox" data-function="mul"/>
+          </td>
+          <td>
+            <label>/</label>
+            <input type="checkbox" data-function="div"/>
+          </td>
+        </tr>
+      </table>
+      <div id="timer">
+        <button id="start" onclick="timer()">Start</button>
+        <p>Time: <span id="time">10</span></p>
+      </div>
+      <div>Score: <span id="score">0</span></div>
+      <input class="limit" type="number" min="10" max="100" step="5"/>
+      <input id="slider" class="limit" type="range" min="10" max="100" step="5"/>
+    </div>
 
     <script src="./index.js"></script>
   </body>
