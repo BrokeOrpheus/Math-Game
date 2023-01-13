@@ -4,7 +4,9 @@ $(document).ready(function () {
 
 const game = {
   time: 10,
-  score: 0
+  score: 0,
+  highScore: 0,
+  mode: []
 }
 
 let createNumbers = function () {
@@ -46,38 +48,58 @@ let division = function () {
   $('#equation').empty().append(equation).attr('data-result', result);
 }
 
-const functions = {
-  selection: [],
-  add: addition,
-  sub: subtraction,
-  mul: multiplication,
-  div: division
-}
-
 let randomFunc = function () {
-  let randomEq = functions.selection[Math.floor(Math.random() * functions.selection.length)];
-  functions['' + randomEq]();
+  let random = game.mode[Math.floor(Math.random() * game.mode.length)];
+  switch (random) {
+    case 'add':
+      addition();
+      break;
+    case 'sub':
+      subtraction();
+      break;
+    case 'mul':
+      multiplication();
+      break;
+    case 'div':
+      division();
+      break;
+    default:
+      break;
+  }
 }
 
 let updateTime = function () {
   $('#time').empty().append(game.time);
+
+  if (game.time <= 3) {
+    $('#time').css('font-size', '75px').css('color', 'red').animate({
+      fontSize: '50px'
+    });
+  } else {
+    $('#time').css('color', 'white');
+  }
 }
 
-$('#start').click(function () {
+$('#start').click(function (event) {
+
+  game.mode = [];
+  
   $('input:checked').each(function () {
-    functions.selection.push($(this).attr('data-function'));
+    game.mode.push($(this).attr('data-function'));
   });
 
-  game.limit = $('#slider').val();
+  if (game.mode.length === 0) {
+    $('input[data-function="add"]').prop('checked', true);
+    game.mode.push('add');
+  }
 
+  game.limit = $('#slider').val();
   game.time = 10;
   updateTime();
-
   randomFunc();
 });
 
 let timer = function () {
-
   game.score = 0;
   $('#score').empty().append(game.score);
   $('#input').prop('disabled', false);
@@ -98,27 +120,48 @@ let timer = function () {
 }
 
 $(document).on('input', '#input', function () {
-    if(Number($('#input').val()) === Number($('#equation').attr('data-result'))) {
-      $('#input').val('');
+  if (Number($('#input').val()) === Number($('#equation').attr('data-result'))) {
+    $('#input').val('');
 
-      game.time += 1;
-      game.totalTime += 1;
-      $('#time').empty().append(game.time);
+    game.time += 1;
+    updateTime();
 
-      game.score += 10;
-      $('#score').empty().append(game.score);
+    game.score += 1;
+    $('#score').empty().append(game.score);
 
-      $('#input').attr('placeholder', '');
-
-      $('#equation').empty();
-
-      randomFunc();
+    if (game.score > game.highScore) {
+      game.highScore = game.score;
+      $('#highScore').empty().append(game.highScore);
+    }
+    
+    randomFunc();
   }
 });
 
 $('.limit').change(function () {
+
+  let input = $('#numberLimit');
+  let inputValue = Number($('#numberLimit').val());
+  switch (true) {
+    case inputValue < 10:
+      input.val(10);
+      break;
+    case inputValue > 100:
+      input.val(100);
+      break;
+    case inputValue > 10 && inputValue % 5 !== 0:
+      while (inputValue % 5 !== 0) {
+        inputValue += 1;
+      }
+      input.val(inputValue);
+      break;
+    default:
+      break;
+  }
+
   let newLimit = $(this).val();
   $('.limit').each(function () {
     $(this).val(newLimit);
   });
+
 });
