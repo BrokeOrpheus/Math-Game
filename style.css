@@ -1,3 +1,5 @@
+/* Element */
+
 body {
   background: linear-gradient(to left,#365470, #89253e);
   height: 80vh;
@@ -5,8 +7,33 @@ body {
 p, span {
   color: white;
 }
-td {
+table {
+  display: flex;
+}
+li {
+  font-size: 20px;
   padding: 10px;
+  list-style-type: none;
+}
+
+/* Class */
+
+.centerIt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.row {
+  margin-top: 50px;
+  height: 100%;
+}
+
+/* ID */
+
+#display {
+  background: linear-gradient(to top, rgba(100,100,100,.4), rgba(150,150,150,.4));
+  border-radius: 15px;
 }
 #input {
   width: 100px;
@@ -20,27 +47,7 @@ td {
 #numberLimit {
   width: 70px;
 }
-.centerIt {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-#display {
-  background: linear-gradient(to top, rgba(100,100,100,.4), rgba(150,150,150,.4));
-  border-radius: 15px;
-}
-.row {
-  margin-top: 50px;
-  height: 100%;
-}
-table {
-  display: flex;
-}
-label {
-  font-size: 20px;
-}
-#equation {
+#equation, #scoreboard {
   font-size: 25px;
 }
 #slider {

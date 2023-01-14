@@ -1,12 +1,22 @@
-$(document).ready(function () {
-  $('#input').prop('disabled', true).val('');
-});
-
 const game = {
   time: 10,
+  result: 0,
+  limit: 0,
   score: 0,
   highScore: 0,
   mode: []
+}
+
+// Functions
+
+let enable = function (ele) {
+  $(ele).prop('disabled', false);
+}
+let disable = function (ele) {
+  $(ele).prop('disabled', true);
+}
+let display = function (ele, val) {
+  $(ele).empty().append(val);
 }
 
 let createNumbers = function () {
@@ -20,22 +30,22 @@ let createNumbers = function () {
 let addition = function () {
   let newNumbers = createNumbers();
   let equation = newNumbers[0] + ' + ' + newNumbers[1];
-  let result = newNumbers[0] + newNumbers[1];
-  $('#equation').empty().append(equation).attr('data-result', result);
+  game.result = newNumbers[0] + newNumbers[1];
+  display('#equation', equation);
 }
 
 let subtraction = function () {
   let newNumbers = createNumbers();
   let equation = newNumbers[0] + ' - ' + newNumbers[1];
-  let result = newNumbers[0] - newNumbers[1];
-  $('#equation').empty().append(equation).attr('data-result', result);
+  game.result = newNumbers[0] - newNumbers[1];
+  display('#equation', equation);
 }
 
 let multiplication = function () {
   let newNumbers = createNumbers();
   let equation = newNumbers[0] + ' * ' + newNumbers[1];
-  let result = newNumbers[0] * newNumbers[1];
-  $('#equation').empty().append(equation).attr('data-result', result);
+  game.result = newNumbers[0] * newNumbers[1];
+  display('#equation', equation);
 }
 
 let division = function () {
@@ -44,13 +54,13 @@ let division = function () {
     newNumbers = createNumbers();
   }
   let equation = newNumbers[0] + ' / ' + newNumbers[1];
-  let result = newNumbers[0] / newNumbers[1];
-  $('#equation').empty().append(equation).attr('data-result', result);
+  game.result = newNumbers[0] / newNumbers[1];
+  display('#equation', equation);
 }
 
 let randomFunc = function () {
-  let random = game.mode[Math.floor(Math.random() * game.mode.length)];
-  switch (random) {
+  let randomIndex = game.mode[Math.floor(Math.random() * game.mode.length)];
+  switch (randomIndex) {
     case 'add':
       addition();
       break;
@@ -69,10 +79,10 @@ let randomFunc = function () {
 }
 
 let updateTime = function () {
-  $('#time').empty().append(game.time);
+  display('#time', game.time);
 
   if (game.time <= 3) {
-    $('#time').css('font-size', '75px').css('color', 'red').animate({
+    $('#time').css('color', 'red').css('font-size', '75px').animate({
       fontSize: '50px'
     });
   } else {
@@ -80,8 +90,45 @@ let updateTime = function () {
   }
 }
 
-$('#start').click(function (event) {
+// Listeners
 
+$(document).ready(function () {
+  disable('#input');
+  $('#input').val('');
+});
+
+$('.limit').change(function () {
+  let input = $('#numberLimit');
+  let currValue = Number($('#numberLimit').val());
+
+  switch (true) {
+    case currValue < 10:
+      input.val(10);
+      break;
+    case currValue > 100:
+      input.val(100);
+      break;
+    case currValue > 10 && currValue % 5 !== 0:
+      while (currValue % 5 !== 0) {
+        currValue += 1;
+      }
+      input.val(currValue);
+      break;
+    default:
+      break;
+  }
+
+  let newLimit = $(this).val();
+  $('.limit').each(function () {
+    $(this).val(newLimit);
+  });
+
+});
+
+$('#start').click(function () {
+  game.time = 10;
+  game.score = 0;
+  game.limit = Number($('#slider').val());
   game.mode = [];
   
   $('input:checked').each(function () {
@@ -93,18 +140,12 @@ $('#start').click(function (event) {
     game.mode.push('add');
   }
 
-  game.limit = $('#slider').val();
-  game.time = 10;
   updateTime();
-  randomFunc();
-});
-
-let timer = function () {
-  game.score = 0;
-  $('#score').empty().append(game.score);
-  $('#input').prop('disabled', false);
-  $('#start').prop('disabled', true);
+  display('#score', game.score);
+  enable('#input');
   $('#input').focus();
+  disable('#start');
+  randomFunc();
 
   let startTime = setInterval(function () {
     game.time -= 1;
@@ -112,56 +153,28 @@ let timer = function () {
 
     if (game.time === 0) {
       clearInterval(startTime);
-      $('#input').prop('disabled', true).val('');
-      $('#start').prop('disabled', false);
-      $('#equation').empty().append('<p>Time\'s Up!</p>');
+      disable('#input');
+      $('#input').val('');
+      enable('#start');
+      display('#equation', '<p>Time\'s Up!</p>');
     }
   }, 1000);
-}
 
-$(document).on('input', '#input', function () {
-  if (Number($('#input').val()) === Number($('#equation').attr('data-result'))) {
-    $('#input').val('');
+});
 
+$('#input').on('input', function () {
+  if (Number($('#input').val()) === game.result) {
     game.time += 1;
-    updateTime();
-
     game.score += 1;
-    $('#score').empty().append(game.score);
+
+    $('#input').val('');
+    updateTime();
+    display('#score', game.score);
+    randomFunc();
 
     if (game.score > game.highScore) {
       game.highScore = game.score;
-      $('#highScore').empty().append(game.highScore);
+      display('#highScore', game.highScore);
     }
-    
-    randomFunc();
   }
-});
-
-$('.limit').change(function () {
-
-  let input = $('#numberLimit');
-  let inputValue = Number($('#numberLimit').val());
-  switch (true) {
-    case inputValue < 10:
-      input.val(10);
-      break;
-    case inputValue > 100:
-      input.val(100);
-      break;
-    case inputValue > 10 && inputValue % 5 !== 0:
-      while (inputValue % 5 !== 0) {
-        inputValue += 1;
-      }
-      input.val(inputValue);
-      break;
-    default:
-      break;
-  }
-
-  let newLimit = $(this).val();
-  $('.limit').each(function () {
-    $(this).val(newLimit);
-  });
-
 });
